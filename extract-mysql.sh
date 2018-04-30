@@ -49,14 +49,14 @@ do_extraction () {
         mkdir --verbose -p "${restore_dir}"
         xbstream -x -C "${restore_dir}" < "${file}"
 
-        xtrabackup_args=(
+        innobackupex_args=(
             "--parallel=${processors}"
             "--decrypt=AES256"
             "--encrypt-key-file=${encryption_key_file}"
             "--decompress"
         )
 
-        xtrabackup "${xtrabackup_args[@]}" --target-dir="${restore_dir}"
+        innobackupex "${innobackupex_args[@]}" --target-dir="${restore_dir}"
         find "${restore_dir}" -name "*.xbcrypt" -exec rm {} \;
         find "${restore_dir}" -name "*.qp" -exec rm {} \;
     
