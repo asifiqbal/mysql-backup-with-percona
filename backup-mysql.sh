@@ -71,7 +71,7 @@ take_backup () {
     # Make sure today's backup directory is available and take the actual backup
     mkdir -p "${todays_dir}"
     find "${todays_dir}" -type f -name "*.incomplete" -delete
-    innobackupex "${xtrabackup_args[@]}" --target-dir="${todays_dir}" > "${todays_dir}/${backup_type}-${now}.xbstream.incomplete" 2> "${log_file}"
+    innobackupex "${innobackupex_args[@]}" --target-dir="${todays_dir}" > "${todays_dir}/${backup_type}-${now}.xbstream.incomplete" 2> "${log_file}"
     
     mv "${todays_dir}/${backup_type}-${now}.xbstream.incomplete" "${todays_dir}/${backup_type}-${now}.xbstream"
 }
