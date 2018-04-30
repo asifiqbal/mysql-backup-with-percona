@@ -2,7 +2,7 @@
 
 export LC_ALL=C
 
-days_to_keep=30
+days_to_keep=7
 backup_owner="backup"
 parent_dir="/backups/mysql"
 defaults_file="/etc/mysql/backup.cnf"
@@ -71,10 +71,9 @@ set_backup_type () {
 }
 
 set_options () {
-    # List the xtrabackup arguments
-    xtrabackup_args=(
+    # List the innobackupex arguments
+    innobackupex_args=(
         "--defaults-file=${defaults_file}"
-        "--backup"
         "--extra-lsndir=${working_dir}"
         "--compress"
         "--stream=xbstream"
@@ -91,7 +90,7 @@ set_options () {
     # Add option to read LSN (log sequence number) if taking an incremental backup
     if [ "$backup_type" == "incremental" ]; then
         lsn=$(awk '/to_lsn/ {print $3;}' "${working_dir}/xtrabackup_checkpoints")
-        xtrabackup_args+=( "--incremental-lsn=${lsn}" )
+        innobackupex_args+=( "--incremental-lsn=${lsn}" )
     fi
 }
 
@@ -105,7 +104,7 @@ rotate_old () {
 
 take_backup () {
     find "${working_dir}" -type f -name "*.incomplete" -delete
-    xtrabackup "${xtrabackup_args[@]}" --target-dir="${working_dir}" > "${working_dir}/${backup_type}-${now_string}.xbstream.incomplete" 2> "${log_file}"
+    innobackupex "${innobackupex_args[@]}" --target-dir="${working_dir}" > "${working_dir}/${backup_type}-${now_string}.xbstream.incomplete" 2> "${log_file}"
 
     mv "${working_dir}/${backup_type}-${now_string}.xbstream.incomplete" "${working_dir}/${backup_type}-${now_string}.xbstream"
 }
